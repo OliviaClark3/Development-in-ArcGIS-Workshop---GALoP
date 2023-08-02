@@ -17,7 +17,7 @@ require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/
     const basemap = new Basemap({
         baseLayers: [
             topoLayer,
-            // hillShadeLayer
+            hillShadeLayer
         ]
     })
 
@@ -42,6 +42,57 @@ require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/
         zoom: 10,
         container: "viewDiv"
     })
+
+    view.popup.defaultPopupTemplateEnabled = true
+
+    const popupHuts = {
+        "content": "<img src={introductionThumbnail} /><br />" +
+            "<h1>{name}</h1><i>{place}, {region}</i><br /><br />" +
+            "<b>Facilities:</b> {facilities}<br />" +
+            "<b>Status:</b> {status}<br />" +
+            "<b>Bookable:</b> {bookable}<br />" +
+            "<a href='{staticLink}'>More Info</a>"
+    }
+
+    const trailHutsRenderer = {
+        "type": "simple",
+        "symbol": {
+          "type": "picture-marker",
+          "url": "http://static.arcgis.com/images/Symbols/NPS/npsPictograph_0231b.png",
+          "width": "18px",
+          "height": "18px"
+        }
+    }
+
+    const labelHuts = {
+        // autocasts as new LabelClass()
+        symbol: {
+            type: "text", // autocasts as new TextSymbol()
+            color: [43, 43, 43, 255],
+            font: {
+                // autocast as new Font()
+                weight: "bold"
+            },
+            haloSize: 1,
+            haloColor: "white"
+        },
+        labelPlacement: "below-center",
+        labelExpressionInfo: {
+            expression: "$feature.name"
+        }
+    };
+
+    const trailHuts = new FeatureLayer({
+        url: "https://services1.arcgis.com/3JjYDyG3oajxU6HO/ArcGIS/rest/services/DOC_Huts/FeatureServer/0",
+        outFields: ["name","place","region","bookable","facilities"],
+        popupTemplate: popupHuts,
+        renderer: trailHutsRenderer,
+        labelingInfo: [labelHuts]
+    })
+    map.add(trailHuts)
+
+    
+
 
     
 
