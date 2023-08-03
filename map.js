@@ -1,4 +1,4 @@
-require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/layers/VectorTileLayer", "esri/layers/TileLayer", "esri/geometry/Point", "esri/layers/FeatureLayer", "esri/widgets/Locate", "esri/layers/ElevationLayer", "esri/widgets/ElevationProfile", "esri/widgets/BasemapGallery", "esri/widgets/LayerList"], function(esriConfig, Map, MapView, Basemap, VectorTileLayer, TileLayer, Point, FeatureLayer, Locate, ElevationLayer, ElevationProfile, BasemapGallery, LayerList) {
+require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/layers/VectorTileLayer", "esri/layers/TileLayer", "esri/geometry/Point", "esri/layers/FeatureLayer", "esri/widgets/Locate", "esri/layers/ElevationLayer", "esri/widgets/ElevationProfile", "esri/widgets/BasemapGallery", "esri/widgets/LayerList", "esri/layers/ImageryTileLayer", "esri/widgets/Expand"], function(esriConfig, Map, MapView, Basemap, VectorTileLayer, TileLayer, Point, FeatureLayer, Locate, ElevationLayer, ElevationProfile, BasemapGallery, LayerList, ImageryTileLayer, Expand) {
 
     esriConfig.apikey = "AAPKb9f33ae691024e1aaad4a7c7e6cc3121-bYon1yJoAQgQgn4bGbNV7pMdUE5bfXrYu3BT_suhy0CKoP3qJ2f68kJoN5_KygR"
 
@@ -113,9 +113,21 @@ require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/
         }
     })
 
+    const windForecast = new ImageryTileLayer({
+        url: "https://tiledimageservices.arcgis.com/hLRlshaEMEYQG5A8/arcgis/rest/services/vector_field_layer/ImageServer",
+        title: "Wind",
+        renderer: {
+          type: "flow", // autocasts to new AnimatedFlowRenderer
+          lineWidth: "1px",
+          lineColor: [50, 120, 240, 0.3],
+          density: 0.5,
+        },
+        effect: "bloom(2, 0.25px, 0)",
+      });
+
     const map = new Map({
         basemap: topoBasemap,
-        layers: [trailsLayer, trailHuts],
+        layers: [trailsLayer, trailHuts, windForecast],
         ground: {
             layers: [elevationLayer]
         }
@@ -156,7 +168,11 @@ require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/
         profiles: [{ type: "ground" }]
     })
     view.when(function () {
-        view.ui.add(elevationProfile)
+        const elevationProfileExpand = new Expand({
+            view: view,
+            content: elevationProfile
+        })
+        view.ui.add(elevationProfileExpand, "bottom-left")
     })
 
     const basemapGallery = new BasemapGallery({
