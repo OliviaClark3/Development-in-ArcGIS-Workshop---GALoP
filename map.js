@@ -1,4 +1,4 @@
-require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/layers/VectorTileLayer", "esri/layers/TileLayer", "esri/geometry/Point", "esri/layers/FeatureLayer"], function(esriConfig, Map, MapView, Basemap, VectorTileLayer, TileLayer, Point, FeatureLayer) {
+require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/layers/VectorTileLayer", "esri/layers/TileLayer", "esri/geometry/Point", "esri/layers/FeatureLayer", "esri/widgets/Locate"], function(esriConfig, Map, MapView, Basemap, VectorTileLayer, TileLayer, Point, FeatureLayer, Locate) {
 
     esriConfig.apikey = "AAPKb9f33ae691024e1aaad4a7c7e6cc3121-bYon1yJoAQgQgn4bGbNV7pMdUE5bfXrYu3BT_suhy0CKoP3qJ2f68kJoN5_KygR"
 
@@ -101,6 +101,16 @@ require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/
     //     labelingInfo: [labelHuts]
     // })
     map.add(trailHuts)
+
+    const locate = new Locate({
+        view: view,
+        useHeadingEnabled: false,
+        goToOverride: function(view, options) {
+            options.target.scale = 1500;
+            return view.goTo(options.target);
+        }
+    })
+    view.ui.add(locate, "top-left")
 
 
 
