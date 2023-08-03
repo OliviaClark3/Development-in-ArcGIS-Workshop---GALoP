@@ -1,4 +1,4 @@
-require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/layers/VectorTileLayer", "esri/layers/TileLayer", "esri/geometry/Point", "esri/layers/FeatureLayer", "esri/widgets/Locate"], function(esriConfig, Map, MapView, Basemap, VectorTileLayer, TileLayer, Point, FeatureLayer, Locate) {
+require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/layers/VectorTileLayer", "esri/layers/TileLayer", "esri/geometry/Point", "esri/layers/FeatureLayer", "esri/widgets/Locate", "esri/layers/ElevationLayer", "esri/widgets/ElevationProfile"], function(esriConfig, Map, MapView, Basemap, VectorTileLayer, TileLayer, Point, FeatureLayer, Locate, ElevationLayer, ElevationProfile) {
 
     esriConfig.apikey = "AAPKb9f33ae691024e1aaad4a7c7e6cc3121-bYon1yJoAQgQgn4bGbNV7pMdUE5bfXrYu3BT_suhy0CKoP3qJ2f68kJoN5_KygR"
 
@@ -77,9 +77,18 @@ require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/
     })
     // map.add(trailsLayer, 0)
 
+    const elevationLayer = new ElevationLayer({
+        portalItem: {
+            id: "2ce4fe7d77024e719f8a04d2155b3fd2"
+        }
+    })
+
     const map = new Map({
         basemap: basemap,
-        layers: [trailsLayer, trailHuts]
+        layers: [trailsLayer, trailHuts],
+        ground: {
+            layers: [elevationLayer]
+        }
     })
 
     const view = new MapView({
@@ -112,7 +121,13 @@ require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/
     })
     view.ui.add(locate, "top-left")
 
-
+    const elevationProfile = new ElevationProfile({
+        view: view,
+        profiles: [{ type: "ground" }]
+    })
+    view.when(function () {
+        view.ui.add(elevationProfile)
+    })
 
     
 
