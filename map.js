@@ -1,25 +1,55 @@
-require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/layers/VectorTileLayer", "esri/layers/TileLayer", "esri/geometry/Point", "esri/layers/FeatureLayer", "esri/widgets/Locate", "esri/layers/ElevationLayer", "esri/widgets/ElevationProfile"], function(esriConfig, Map, MapView, Basemap, VectorTileLayer, TileLayer, Point, FeatureLayer, Locate, ElevationLayer, ElevationProfile) {
+require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/layers/VectorTileLayer", "esri/layers/TileLayer", "esri/geometry/Point", "esri/layers/FeatureLayer", "esri/widgets/Locate", "esri/layers/ElevationLayer", "esri/widgets/ElevationProfile", "esri/widgets/BasemapGallery"], function(esriConfig, Map, MapView, Basemap, VectorTileLayer, TileLayer, Point, FeatureLayer, Locate, ElevationLayer, ElevationProfile, BasemapGallery) {
 
     esriConfig.apikey = "AAPKb9f33ae691024e1aaad4a7c7e6cc3121-bYon1yJoAQgQgn4bGbNV7pMdUE5bfXrYu3BT_suhy0CKoP3qJ2f68kJoN5_KygR"
 
     const topoLayer = new VectorTileLayer({
         portalItem: {
-            id: "734c12e9904b4a8086d2dff8582a93a1"
+            id: "734c12e9904b4a8086d2dff8582a93a1" // NZ Topo Relief (Eagle)
         },
     })
 
     const hillShadeLayer = new TileLayer({
         portalItem: {
-            id: "38c860f8dbd24820b2a59ccc9a3dabdb",
+            id: "38c860f8dbd24820b2a59ccc9a3dabdb" // NZ Alpha Hillshade (Eagle)
         }
     })
 
-    const basemap = new Basemap({
+    const topoBasemap = new Basemap({
         baseLayers: [
             topoLayer,
             hillShadeLayer
-        ]
+        ],
+        title: "Vector Topographic",
+        id: "vectortopographicbasemap"
     })
+
+    const linzTopoLayer = new TileLayer({
+        portalItem: {
+            id: "85027f060e2b47249a508ada6f44403d" // NZ LINZ Topographic
+        },
+    });
+
+    const linzBasemap = new Basemap({
+        baseLayers: [
+            linzTopoLayer
+        ],
+        title: "LINZ Topographic",
+        id: "linzbasemap"
+    });
+
+    const imageryLayer = new TileLayer({
+        portalItem: {
+            id: "d284729222d04a3cb548cfe27716ea43" // NZ imagery
+        }
+    });
+
+    const imageryBasemap = new Basemap({
+        baseLayers: [
+            imageryLayer
+        ],
+        title: "Imagery",
+        id: "imagerybasemap"
+    });
 
     // const trailHutsLayer = new FeatureLayer({
     //     url: "https://services1.arcgis.com/3JjYDyG3oajxU6HO/ArcGIS/rest/services/DOC_Huts/FeatureServer/0"
@@ -84,7 +114,7 @@ require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/
     })
 
     const map = new Map({
-        basemap: basemap,
+        basemap: topoBasemap,
         layers: [trailsLayer, trailHuts],
         ground: {
             layers: [elevationLayer]
@@ -128,6 +158,12 @@ require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/
     view.when(function () {
         view.ui.add(elevationProfile)
     })
+
+    const basemapGallery = new BasemapGallery({
+        view: view,
+        source: [topoBasemap, linzBasemap, imageryBasemap]
+    })
+    view.ui.add(basemapGallery, "top-right")
 
     
 
