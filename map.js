@@ -118,8 +118,8 @@ require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/
         title: "Wind",
         renderer: {
           type: "flow", // autocasts to new AnimatedFlowRenderer
-          lineWidth: "1px",
-          lineColor: [50, 120, 240, 0.3],
+          trailWidth: "1px",
+          color: [50, 120, 240, 0.3],
           density: 0.5,
         },
         effect: "bloom(2, 0.25px, 0)",
@@ -137,7 +137,10 @@ require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/
         map: map,
         center: new Point({ x: 1795999, y: 5457405, spatialReference: { wkid: 2193 } }), // nztm coordinates
         zoom: 10,
-        container: "viewDiv"
+        container: "viewDiv",
+        padding: {
+            left: 49
+        }
     })
 
     view.popup.defaultPopupTemplateEnabled = true
@@ -165,28 +168,65 @@ require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/
 
     const elevationProfile = new ElevationProfile({
         view: view,
-        profiles: [{ type: "ground" }]
+        profiles: [{ type: "ground" }],
+        container: "profile"
     })
-    view.when(function () {
-        const elevationProfileExpand = new Expand({
-            view: view,
-            content: elevationProfile
-        })
-        view.ui.add(elevationProfileExpand, "bottom-left")
-    })
+    // view.ui.add(elevationProfile)
+
+    // view.when(function () {
+    //     // view.ui.add(elevationProfile)
+    //     // const elevationProfileExpand = new Expand({
+    //     //     view: view,
+    //     //     content: elevationProfile
+    //     // })
+    //     // view.ui.add(elevationProfileExpand, "bottom-left")
+    // })
 
     const basemapGallery = new BasemapGallery({
         view: view,
-        source: [topoBasemap, linzBasemap, imageryBasemap]
+        source: [topoBasemap, linzBasemap, imageryBasemap],
+        container: "gallery"
     })
-    view.ui.add(basemapGallery, "top-right")
+    // view.ui.add(basemapGallery, "top-right")
+
+    const layerList = new LayerList({
+        view: view,
+        container: "layers"
+    })
+    // view.ui.add(layerList, "top-right")
 
     view.when(() => {
-        const layerList = new LayerList({
-            view: view
-        })
 
-        view.ui.add(layerList, "top-right")
+        let activeWidget;
+
+        // define which code should run when our action bar is clicked
+        const handleActionBarClick = ({ target }) => {
+            // make sure clicking on a calcite actoin button
+            if (target.tagName !== "CALCITE-ACTION") {
+                return; 
+            }
+
+            // check there is active widget and if so hide it
+            if (activeWidget) {
+                document.querySelector(
+                    `[data-action-id=${activeWidget}]`
+                ).active = false;
+                document.querySelector(`[data-panel-id=${activeWidget}]`).hidden = true;
+            }
+
+            // determine which widget button was clicked. If it's the button for the currectly active widget, then set the active widget to null, else hide the current widget and show the next
+            const nextWidget = target.dataset.actionId
+            if (nextWidget !== activeWidget) {
+                document.querySelector(`[data-action-id=${nextWidget}]`).active = true;
+                document.querySelector(`[data-panel-id=${nextWidget}]`).hidden = false;
+                activeWidget = nextWidget;
+            } else {
+                activeWidget = null 
+            }
+        }
+
+        // add code to the action bar
+        document.querySelector("calcite-action-bar").addEventListener("click", handleActionBarClick);
     })
 
 
