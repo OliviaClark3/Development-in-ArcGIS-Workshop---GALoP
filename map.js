@@ -21,29 +21,10 @@ require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/
         ]
     })
 
-    const trailHutsLayer = new FeatureLayer({
-        url: "https://services1.arcgis.com/3JjYDyG3oajxU6HO/ArcGIS/rest/services/DOC_Huts/FeatureServer/0"
-    })
+    // const trailHutsLayer = new FeatureLayer({
+    //     url: "https://services1.arcgis.com/3JjYDyG3oajxU6HO/ArcGIS/rest/services/DOC_Huts/FeatureServer/0"
+    // })
     // map.add(trailHutsLayer)
-
-    const trailsLayer = new FeatureLayer({
-        url: "https://services1.arcgis.com/3JjYDyG3oajxU6HO/ArcGIS/rest/services/DOC_Tracks/FeatureServer/0"
-    })
-    // map.add(trailsLayer, 0)
-
-    const map = new Map({
-        basemap: basemap,
-        layers: [trailsLayer, trailHutsLayer]
-    })
-
-    const view = new MapView({
-        map: map,
-        center: new Point({ x: 1795999, y: 5457405, spatialReference: { wkid: 2193 } }), // nztm coordinates
-        zoom: 10,
-        container: "viewDiv"
-    })
-
-    view.popup.defaultPopupTemplateEnabled = true
 
     const popupHuts = {
         "content": "<img src={introductionThumbnail} /><br />" +
@@ -86,10 +67,42 @@ require(["esri/config", "esri/Map", "esri/views/MapView", "esri/Basemap", "esri/
         url: "https://services1.arcgis.com/3JjYDyG3oajxU6HO/ArcGIS/rest/services/DOC_Huts/FeatureServer/0",
         outFields: ["name","place","region","bookable","facilities"],
         popupTemplate: popupHuts,
-        renderer: trailHutsRenderer,
+        renderer: hutsRenderer,
         labelingInfo: [labelHuts]
     })
+
+    const trailsLayer = new FeatureLayer({
+        url: "https://services1.arcgis.com/3JjYDyG3oajxU6HO/ArcGIS/rest/services/DOC_Tracks/FeatureServer/0",
+        renderer: trailsRenderer
+    })
+    // map.add(trailsLayer, 0)
+
+    const map = new Map({
+        basemap: basemap,
+        layers: [trailsLayer, trailHuts]
+    })
+
+    const view = new MapView({
+        map: map,
+        center: new Point({ x: 1795999, y: 5457405, spatialReference: { wkid: 2193 } }), // nztm coordinates
+        zoom: 10,
+        container: "viewDiv"
+    })
+
+    view.popup.defaultPopupTemplateEnabled = true
+
+    
+
+    // const trailHuts = new FeatureLayer({
+    //     url: "https://services1.arcgis.com/3JjYDyG3oajxU6HO/ArcGIS/rest/services/DOC_Huts/FeatureServer/0",
+    //     outFields: ["name","place","region","bookable","facilities"],
+    //     popupTemplate: popupHuts,
+    //     renderer: hutsRenderer,
+    //     labelingInfo: [labelHuts]
+    // })
     map.add(trailHuts)
+
+
 
     
 
